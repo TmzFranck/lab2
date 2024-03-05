@@ -16,7 +16,7 @@ Falls Sie eine sinnvolle Linuxdistribution verwenden, können Sie diese installi
 cmake binutils g++-11 gcc-11.
 Falls Sie Windows verwenden, empfehlen wir Visual Studio 2022, ggf. brauchen Sie CMake und git extra.
 3. **Klonen des Repositories**: Führe den folgenden Befehl aus, um das Repository auf deinem lokalen System zu klonen:
-- git clone https://github.com/TmzFranck/lab1.git
+- git clone https://github.com/TmzFranck/lab2.git
 
 
 
