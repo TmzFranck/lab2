@@ -203,3 +203,78 @@ void FES::set_block(const std::uint32_t y, const std::uint32_t x, const block_ty
 	set_row(indices[7].first, indices[7].second, block[2][1], image);
 	set_row(indices[8].first, indices[8].second, block[2][2], image);
 }
+
+
+BitmapImage FES::encrypt_parallel_coarse(const BitmapImage& original_image, const FES::key_type& encryption_key, int num_threads = 1) {
+    const auto height = original_image.get_height();
+    const auto width = original_image.get_width();
+
+    auto encrypted_image = BitmapImage{ height, width };
+
+// Use OpenMP to parallelize the encryption of multiple rows
+#pragma omp parallel for num_threads(num_threads)
+for (auto y = std::uint32_t(0); y < height; y += 3) {
+	for (auto x = std::uint32_t(0); x < width; x += 48) {
+		const auto& current_block = get_block(y, x, original_image);
+		const auto& previous_block = get_previous_block(y, x, encryption_key, original_image);
+
+		const auto& encrypted_block = encrypt_block(current_block, previous_block);
+
+		set_block(y, x, encrypted_block, encrypted_image);
+	}
+}
+
+    return encrypted_image;
+}
+
+
+BitmapImage FES::encrypt_parallel_fine(const BitmapImage& original_image, const FES::key_type& encryption_key, int num_threads = 1) {
+    const auto height = original_image.get_height();
+    const auto width = original_image.get_width();
+
+    auto encrypted_image = BitmapImage{ height, width };
+
+    for (auto y = std::uint32_t(0); y < height; y += 3) {
+
+        // Use OpenMP to parallelize the encryption within a row
+        #pragma omp parallel for num_threads(num_threads)
+        for (auto x = std::uint32_t(0); x < width; x += 48) {
+            const auto& current_block = get_block(y, x, original_image);
+            const auto& previous_block = get_previous_block(y, x, encryption_key, original_image);
+
+            const auto& encrypted_block = encrypt_block(current_block, previous_block);
+
+            set_block(y, x, encrypted_block, encrypted_image);
+        }
+    }
+
+    return encrypted_image;
+}
+
+
+BitmapImage FES::encrypt_parallel(const BitmapImage& original_image, const FES::key_type& encryption_key, int num_threads = 1) {
+	const auto height = original_image.get_height();
+	const auto width = original_image.get_width();
+
+	auto encrypted_image = BitmapImage{ height, width };
+
+	// Set the number of threads for OpenMP
+	omp_set_num_threads(num_threads);
+
+	// Use OpenMP to parallelize the encryption of multiple rows
+	#pragma omp parallel for
+	for (auto y = std::uint32_t(0); y < height; y += 3) {
+		// Use OpenMP to parallelize the encryption within a row
+		#pragma omp parallel for
+		for (auto x = std::uint32_t(0); x < width; x += 48) {
+			const auto& current_block = get_block(y, x, original_image);
+			const auto& previous_block = get_previous_block(y, x, encryption_key, original_image);
+
+			const auto& encrypted_block = encrypt_block(current_block, previous_block);
+
+			set_block(y, x, encrypted_block, encrypted_image);
+		}
+	}
+
+	return encrypted_image;
+}

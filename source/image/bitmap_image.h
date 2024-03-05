@@ -1,6 +1,7 @@
 #pragma once
 
 #include "image/pixel.h"
+#include <omp.h>
 
 #include <cstdint>
 #include <vector>
@@ -22,9 +23,15 @@ public:
 
 	[[nodiscard]] BitmapImage transpose() const;
 
+	[[nodiscard]] BitmapImage transpose_parallel(int num_threads) const;
+
 	[[nodiscard]] BitmapImage get_grayscale() const;
 
+	[[nodiscard]] BitmapImage get_grayscale_parallel(int num_threads) const;
+
 	void mystery();
+
+	void mystery_parallel(int num_threads); 
 
 private:
 	index_type height{};

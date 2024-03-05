@@ -12,6 +12,8 @@ public:
 
 	[[nodiscard]] static hash_type hash(std::uint8_t value) noexcept;
 
+	[[nodiscard]] static hash_type hash(std::uint64_t value) noexcept;
+
 	[[nodiscard]] static hash_type combine_hashes(hash_type first_hash, hash_type second_hash) noexcept;
 
 private:

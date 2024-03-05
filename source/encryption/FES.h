@@ -6,6 +6,7 @@
 #include <array>
 #include <cstdint>
 #include <utility>
+#include <omp.h>
 
 class FES {
 public:
@@ -14,6 +15,12 @@ public:
 	using block_type = std::array<std::array<row_type, 3>, 3>;
 
 	[[nodiscard]] static BitmapImage encrypt(const BitmapImage& original_image, const key_type& encryption_key);
+
+	[[nodiscard]] static BitmapImage encrypt_parallel_coarse(const BitmapImage& original_image, const FES::key_type& encryption_key, int num_threads);
+
+	[[nodiscard]] static BitmapImage encrypt_parallel_fine(const BitmapImage& original_image, const FES::key_type& encryption_key, int num_threads);
+
+	[[nodiscard]] static BitmapImage encrypt_parallel(const BitmapImage& original_image, const FES::key_type& encryption_key, int num_threads);
 
 	[[nodiscard]] static BitmapImage decrypt(const BitmapImage& encrypted_image, const key_type& encryption_key);
 
